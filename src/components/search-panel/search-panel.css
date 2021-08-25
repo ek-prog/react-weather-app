@@ -1,0 +1,12 @@
+.form-inline{
+    display: flex;
+    margin: 20px 0 20px 0;
+}
+.form-control {
+    width: 50%;
+    margin-right: 10px;
+}
+.btn-outline-success {
+    color: azure;
+    border-color: cadetblue;
+}
