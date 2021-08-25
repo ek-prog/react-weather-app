@@ -5,7 +5,7 @@ import Weather from "../weather";
 import 'weather-icons/css/weather-icons.css';
 import SearchPanel from "../search-panel";
 
-const API_KEY = process.env.REACT_APP_API_KEY;
+const API_key = "4a6bf012e53cb2f83d7284cb89b2d33a";
 
 export default class App extends Component {
   constructor(props) {
@@ -87,7 +87,7 @@ export default class App extends Component {
     console.log(city);
 
     if (city) {
-      const api_call = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}`);
+      const api_call = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_key}`);
 
       const response = await api_call.json();
 
