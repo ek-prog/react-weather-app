@@ -13,7 +13,6 @@ export default class App extends Component {
 
     this.state ={
       city: undefined,
-      country: undefined,
       icon: undefined,
       main: undefined,
       celsius: undefined,
@@ -75,9 +74,7 @@ export default class App extends Component {
         document.body.classList.add('clouds');
     }
 
-
   }
-
 
   getWeather = async (e) => {
 
@@ -108,13 +105,12 @@ export default class App extends Component {
 
 
   render() {
-    const {city, country, celsius, temp_max, temp_min, description, icon} = this.state;
+    const {city, celsius, temp_max, temp_min, description, icon} = this.state;
     return (
         <div className="App">
           <SearchPanel handleSubmit={this.getWeather} error={this.state.error}/>
           <Weather
               city={city}
-              country={country}
               temp_celsius={celsius}
               temp_max={temp_max}
               temp_min={temp_min}
