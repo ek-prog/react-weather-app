@@ -1,31 +1,27 @@
-import React, {Component} from "react";
+import React, {useState, useEffect} from "react";
 import './App.css';
 
 import Weather from "../weather";
 import 'weather-icons/css/weather-icons.css';
 import SearchPanel from "../search-panel";
+import FindMe from "../find-me";
 
-const API_key = "4a6bf012e53cb2f83d7284cb89b2d33a";
-
-export default class App extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state ={
-      city: undefined,
-      icon: undefined,
-      main: undefined,
-      celsius: undefined,
-      temp_min: undefined,
-      temp_max: undefined,
-      description: "",
-      error: false,
+const API_KEY = process.env.REACT_APP_API_KEY;
 
 
-    };
+const App = () =>{
+  const [city, setCity] = useState(undefined);
+  const [icon, setIcon] = useState(undefined);
+  const [celsius, setCelsius] = useState(undefined);
+  const [temp_min, setTemp_min] = useState(undefined);
+  const [temp_max, setTemp_max] = useState(undefined);
+  const [description, setDescription] = useState("");
+  const [error, setError] = useState(false);
 
 
-    this.icons = {
+  // const location = FindMe();
+
+    const icons = {
       Thunderstorm: 'wi-thunderstorm ',
       Drizzle: 'wi-sleet ',
       Rain: 'wi-storm-showers ',
@@ -35,48 +31,48 @@ export default class App extends Component {
       Clouds: 'wi-day-fog '
 
     };
-  }
-  calCelsius(temp){
+
+  const calCelsius = (temp) =>{
     return Math.floor(temp - 273.15);
   }
-  getWeatherIcon(icons, id){
+const getWeatherIcon = (icons, id) =>{
     switch (true){
       case id >= 200 && id <=232:
-        this.setState({icon: this.icons.Thunderstorm});
+        setIcon(icons.Thunderstorm);
         document.body.classList.add('thunderstorm');
         break;
       case id >= 300 && id <=321:
-        this.setState({icon: this.icons.Drizzle});
+        setIcon(icons.Drizzle);
         document.body.classList.add('drizzle');
         break;
       case id >= 500 && id <=531:
-        this.setState({icon: this.icons.Rain});
+        setIcon(icons.Rain);
         document.body.classList.add('rain');
         break;
       case id >= 600 && id <=622:
-        this.setState({icon: this.icons.Snow});
+        setIcon(icons.Snow);
         document.body.classList.add('snow');
         break;
       case id >= 701 && id <=781:
-        this.setState({icon: this.icons.Atmosphere});
+        setIcon(icons.Atmosphere);
         document.body.classList.add('atmosphere');
         break;
       case id === 800 :
-        this.setState({icon: this.icons.Clear});
+        setIcon(icons.Clear);
         document.body.classList.add('clear');
         break;
       case id >= 801 && id <=804:
-        this.setState({icon: this.icons.Clouds});
+        setIcon(icons.Clouds);
         document.body.classList.add('clouds');
         break;
       default:
-        this.setState({icon: this.icons.Clouds});
+        setIcon(icons.Clouds);
         document.body.classList.add('clouds');
     }
 
   }
 
-  getWeather = async (e) => {
+  const getWeather = async (e) => {
 
     e.preventDefault();
 
@@ -84,31 +80,43 @@ export default class App extends Component {
     console.log(city);
 
     if (city) {
-      const api_call = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_key}`);
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&lang=ru`)
+          .then(res => res.json())
+          .then(response => {
+                setCity(response.name);
+                setCelsius(calCelsius(response.main.temp));
+                setTemp_min(calCelsius(response.main.temp_min));
+                setTemp_max(calCelsius(response.main.temp_max));
+                setDescription(response.weather[0].description);
+              getWeatherIcon(icons, response.weather[0].id);
 
-      const response = await api_call.json();
-
-      console.log(response);
-
-      this.setState({
-        city: `${response.name}`,
-        celsius: this.calCelsius(response.main.temp),
-        temp_max: this.calCelsius(response.main.temp_max),
-        temp_min: this.calCelsius(response.main.temp_min),
-        description: response.weather[0].description
-      });
-      this.getWeatherIcon(this.icon, response.weather[0].id);
+              },
+          )
     } else {
-      this.setState({error: true});
+      setError( true);
     }
   };
 
+  useEffect(()=>{
+  fetch(`https://api.openweathermap.org/data/2.5/weather?q=Irkutsk&appid=${API_KEY}&lang=ru`)
+      .then(res => res.json())
+      .then(response => {
+            setCity(response.name);
+            setCelsius(calCelsius(response.main.temp));
+            setTemp_min(calCelsius(response.main.temp_min));
+            setTemp_max(calCelsius(response.main.temp_max));
+            setDescription(response.weather[0].description);
+            getWeatherIcon(icons, response.weather[0].id);
 
-  render() {
-    const {city, celsius, temp_max, temp_min, description, icon} = this.state;
+          },
+      );
+
+  }, []);
+
+
     return (
         <div className="App">
-          <SearchPanel handleSubmit={this.getWeather} error={this.state.error}/>
+          <SearchPanel handleSubmit={getWeather} error={error}/>
           <Weather
               city={city}
               temp_celsius={celsius}
@@ -117,9 +125,15 @@ export default class App extends Component {
               description={description}
               icon={icon}
           />
+
+            {/*<p>Props: {props.cityName}</p>*/}
+            <FindMe />
+            <div>
+                {/*{location ? JSON.stringify(location) : "Location data not available yet."}*/}
+            </div>
         </div>
-    );
-  }
+    )
 }
 
 
+export default App;

@@ -5,6 +5,7 @@ import React from "react";
 
 import "./weather.css";
 
+
 class Weather extends React.Component {
 
     render() {
@@ -31,6 +32,8 @@ class Weather extends React.Component {
     }
 
 };
+
+
 
 function minmaxTemp(min, max){
     if(min && max){
